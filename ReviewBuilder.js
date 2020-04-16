@@ -28,11 +28,37 @@ class ReviewBuilder {
   }
 
   buildReviewsPromises() {
-    // FIXME
+    return Promise.all([
+      readFile("./data/products.json"),
+      readFile("./data/reviews.json"),
+      readFile("./data/users.json"),
+    ]).then((data) => {
+      const result = [];
+      const files = {};
+      data.forEach((data) => result.push(JSON.parse(data)));
+      //console.log("AAAAAAAAAA", JSON.parse(data[0]));
+      files.products = result[0];
+      files.reviews = result[1];
+      files.users = result[2];
+      return produceResult(files);
+    });
   }
 
   async buildReviewsAsyncAwait() {
-    // FIXME
+    //   // FIXME
+    const data = await Promise.all([
+      readFile("./data/products.json"),
+      readFile("./data/reviews.json"),
+      readFile("./data/users.json"),
+    ]);
+    const result = [];
+    const files = {};
+    data.forEach((data) => result.push(JSON.parse(data)));
+    //console.log("AAAAAAAAAA", JSON.parse(data[0]));
+    files.products = result[0];
+    files.reviews = result[1];
+    files.users = result[2];
+    return produceResult(files);
   }
 }
 
