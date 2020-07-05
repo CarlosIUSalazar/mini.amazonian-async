@@ -1,41 +1,40 @@
 # Amazonian Async
-### This was created during my time as a [Code Chrysalis](https://codechrysalis.io) Student
 
-この課題は、読み物と課題のチャレンジの２つのパートに分かれています：
+This activity will be a mixture of reading and solving challenges:
 
-1. パート 1 - 非同期 JavaScript について読む
-2. パート 2 - Promise と async / await を使用して、 Amazonian の課題を解く
+1. Part One - Read about Asynchronous JavaScript
+1. Part Two - Solve the Amazonian Challenge using Promises & Async/Await
 
-# パート 1 - 非同期 JavaScript
+# Part 1 - Asynchronous JavaScript
 
-## レッスンの目的
+## Lesson Objectives
 
-このパートを完了すると、次のことが理解できるようになります：
+By the end of this reading, you should know and understand:
 
-- 非同期呼び出しを扱う必要がある理由
-- コールバックの使い方
-- Promise の使い方
-- async / await の使い方
+- Why we need to handle asynchronous calls
+- How to use callbacks
+- How to use promises
+- How to use async/await
 
-## バックグラウンド
+## Background
 
-同期処理の実行中に、処理を抽象化するために高階関数がどのように役立つかすでに見てきましたが、高階関数の最も重要なケースは、_非同期処理_ を扱うときです。
+We've already seen how higher-order functions can be useful to abstract behaviors while performing synchronous operations, but the most important use of higher-order functions is when doing things _asynchronously_.
 
-### なぜ、非同期処理を扱うことが重要なのか？
+### Why are Handling Asynchronous Operations Important?
 
-JavaScript はシングルスレッドで動作する言語であるため、一度に 1 つのことしかできません。長時間の実行では、[同期とブロッキング](https://github.com/codechrysalis/students/wiki/Synchronous-and-Blocking)で説明されているパフォーマンスの問題が発生します。これは、アプリケーションが非同期処理に依存している場合に問題となる場合があります。
+JavaScript can only do one thing at a time because it is a single-threaded language. Long running operations will result in performance problems described in [Synchronous and Blocking](https://github.com/codechrysalis/students/wiki/Synchronous-and-Blocking). This can cause problems when the application is dependent on asynchronous operations.
 
-開発者が JavaScript の非同期処理のコードを扱う最も一般的なケースは、アプリケーションプログラミングインターフェイス（API） を使用する場合です。サーバを学習するときに独自の API を構築し、サードパーティーの API を扱うことも今後学習する予定です。
+One of the most common ways developers interact with asynchronous code in JavaScript is through APIs, which stands for Application Programming Interface. You will build your own APIs when you learn servers, and you will also learn to interact with third party APIs.
 
-一般的に、API はさまざまなコンポーネント間で明確に定義された通信方法のまとまりです。 API は**リクエストを受け取り**（例：「天気は？」）、**レスポンスを送信します**（「22 ℃ です！」）。
+In general terms, an API is a set of clearly defined methods of communication among various components. APIs **receive requests** (e.g. "What's the weather?") and **send responses** ("22 degrees!").
 
-この通信には時間がかかる場合があります。また、他のコードがリクエストに対するレスポンスに依存している場合、問題が起こる可能性があります。そのため、JavaScript にはこの状況に対処する方法が用意されています。
+Sometimes, this communication can take awhile– and that can cause problems when other code depends on the response from those requests. Because of that, JavaScript has built-in ways to handle this situation.
 
-### 非同期処理を扱わない方法
+### How NOT to Handle Asynchronous Operations
 
-以下に、非同期処理のコードを扱う 3 つの事例を示します。これらの例では、実際には API を使用していないため、[setTimeout](https://developer.mozilla.org/ja/docs/Web/API/WindowTimers/setTimeout) を使用して遅延を発生させています。このメソッドは、関数と数値（`n`）の 2 つの引数を持ちます。次に、`n` ミリ秒後に関数を呼び出します。
+Below, there are three examples of how to handle asynchronous code. Because these examples don't actually use an API, we are using [setTimeout](https://developer.mozilla.org/ro/docs/Web/API/window.setTimeout) to cause a delay. This method takes two arguments– a function, and a number (`n`). It will then invoke the function after `n` milliseconds.
 
-何をすべきかを示す前に、やってはいけないことを以下に示します。以下の関数を見てみましょう。3 秒後に結果が返されるはずです。コードをコンソールに貼り付けて実行するとどうなりますか？
+Before we show you what to do, here's what NOT to do. Take a look at the function below. It should return a result after three seconds. What happens when you paste the code in your console and run it?
 
 ```JavaScript
 function getCoffee(num) {
@@ -52,15 +51,15 @@ console.log(getCoffee(2));
 console.log(getCoffee("butterfly"));
 ```
 
-`undefined`を返します。`getCoffee()`がレスポンスを受け取る前に、 `console.log()`が実行されました。これは想定外の結果であり、問題ですね。
+It returns undefined. The `console.log()` ran before `getCoffee()` had time to receive a response. That's a problem.
 
-## オプション 1：コールバック
+## Option 1: Callbacks
 
-ES6 より以前は、非同期処理のコードはコールバックを介して処理されていました。
+Prior to ES6, asynchronous code was handled through callbacks.
 
-以下の例では、`getCoffeeCallback` は、コーヒーの数とコールバック関数を引数に持つ関数として定義されています。さらに、このコールバック関数は `error` と `result` の 2 つの引数を持ちます。リクエストの成否に応じて、結果もしくはエラーの場合に呼び出されるコールバック関数（その他の引数は null）を返します。
+In the example below, `getCoffeeCallback` is a function that takes two arguments– the number of coffees AND a callback function. This callback function takes two arguments: `error` and `result`. Depending on the success of the request, it will return the callback function invoked with either the result or the error (and null for the other argument).
 
-コンソールで、以下のコードを実行してみましょう！
+Try running the code below in your console!
 
 ```JavaScript
 function getCoffeeCallback(num, func) {
@@ -78,9 +77,9 @@ getCoffeeCallback(2, (error, result) => console.log(error ? error : result));
 getCoffeeCallback("butterfly", (error, result) => console.log(error ? error : result));
 ```
 
-今回のコードは `undefined` を返しません。どうしてでしょうか？その理由は、[イベントループ](https://www.youtube.com/watch?v=8aGhZQkoFbQ)と呼ばれるもののおかげです。結論から言うと、`getCoffeeCallback` に渡された関数がキューに追加されました。JavaScript のイベントループはそのキューと連携して、適切なタイミングでコールバック関数を実行します。
+This time, the code doesn't return undefined. Why? The reason is because of something called the [Event Loop](https://www.youtube.com/watch?v=8aGhZQkoFbQ). Essentially, the function passed into `getCoffeeCallback` was added to a queue. JavaScript's event loop works with that queue to execute callback functions at the right time.
 
-もう 1 つの例を見てみましょう。以前に、`readFileSync` を使用してファイルを同期的に読み込んだことを覚えていますか？ファイルの読み取りは長時間の処理となる _可能性がある_ ため、Node は同期と非同期の両方の実装を提供しています。非同期のバージョンは `readFile` になります。
+Let's look at one more example. Remember how we were reading files synchronously using `readFileSync`? Because reading files _can_ be a long operation, Node provides both synchronous and asynchronous implementations. The asynchronous version is called `readFile`.
 
 ```js
 const fs = require("fs");
@@ -89,11 +88,11 @@ const result = fs.readFile("index.js", "utf8");
 console.log(result);
 ```
 
-`readFile` を使用すると、結果として `undefined` が得られます。
+When we use `readFile`, we get `undefined` as our result.
 
-[Node.js ドキュメント - fs.readFile()](https://nodejs.org/api/fs.html#fs_fs_readfile_path_options_callback) をチェックすると、その理由がわかります：`readFile` には `error` パラメータと `result` パラメータを渡すコールバック関数が 3 番目のパラメータとして必要です。
+If we check [the docs](https://nodejs.org/api/fs.html#fs_fs_readfile_path_options_callback), we can see why: `readFile` expects a third parameter, which is a callback function that gets passed `error` and `result` parameters.
 
-`getCoffeeCallback` 関数と同じように、必要な引数（コールバック関数！）を渡しましょう。
+Just like our `getCoffeeCallback` function, let's give it what it wants– a callback!
 
 ```JavaScript
 const fs = require('fs');
@@ -101,20 +100,20 @@ const fs = require('fs');
 fs.readFile('index.js', 'utf8', (error, result) => console.log(error, result));
 ```
 
-わーい！動きましたね。
+Yay! It worked.
 
-## オプション 2： Promise
+## Option 2: Promises
 
-ES6 では、非同期処理を行うために、非常に優れた方法を標準化しました。
+ES6 normalized a much, much better way to do asynchronous operations– Promises.
 
-以下のリファクタリングされたコードを見てましょう。高階関数 `getCoffeePromise` は、`getCoffeeCallback` 関数とほとんど同じに見えると気付くでしょう。ただし、今回はコールバック関数を渡さずに、`Promise`（`new` キーワードで作成）を返します。この Promise には、2 つの引数（`resolve` と呼ばれる関数と `reject` と呼ばれる関数）を持つ関数が渡されます。
+Take a look at the refactored code below. You'll notice that the higher order function `getCoffeePromise` looks almost identical to the `getCoffeeCallback` function. This time, however, we don't pass in a callback, and we return a `Promise` (which we create with the `new` keyword). This Promise gets passed a function with two arguments: a function we call `resolve` and a function we call `reject`.
 
-`getCoffeePromise` の呼び出し方も少し異なります。コールバック関数を渡さない代わりに、別の方法でレスポンスを処理する必要があります。つまり、`.then()`と `.catch()`をチェーンさせる必要があります。
+The way `getCoffeePromise` is called is a little different as well. Since we're no longer passing in a callback, we need to handle the responses another way– by chaining `.then()` and `.catch()`.
 
-- `.then()` は、`resolve` 関数に渡されたものをすべて出力します。
-- `.catch()` は、`reject` 関数に渡されたものをすべて出力します。
+- The `.then()` is printing whatever was passed into the `resolve` function
+- The `.catch()` prints whatever was passed into the `reject` function.
 
-コンソールで、以下のコードを実行してみましょう！
+Try running this code in your console!
 
 ```JavaScript
 function getCoffeePromise (num) {
@@ -136,24 +135,24 @@ getCoffeePromise("butterfly")
   .catch(error => console.log(error));
 ```
 
-注：Promise を呼び出す場合、最初の例のように 1 行で記述することも、2 番目の例のように改行して次の行に記述することもできます。2 番目の例のように改行して次の行に記述する場合は、チェーンの間にスペース、コメント、セミコロンを追加しないようにしましょう！
+Note: When you call a promise, you can write it in one line like the first example or on separate lines like the second example. If you choose to put it on separate lines like the second example, just make sure you don't add spaces, comments, or semi-colons in the middle of the chain!
 
-[Promise](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise) の詳細については、こちらを参照してください。
+You can read more about [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) here.
 
-## オプション 3：async / await
+## Option 3: Async/Await
 
-ES7 では、Promise の構文に別のアップグレードが提供されました。
+ES7 brought another upgrade to the syntax for Promises.
 
-仕組みは次のとおりです。
+Here is how it works:
 
-1. `async` キーワードを使用して、`getCoffeeAsync` を非同期関数として定義します。
-2. これにより、後で `await` キーワードを使用して、定義した非同期関数を呼び出すことができます。
-3. `await` キーワードの次の行の処理は、`await` 行の処理が終了（解決）するまで _待機します_。
-4. `try` および `catch` キーワードを使用して、非同期処理の成功と失敗をハンドリングすることができます。
+1. We define `getCoffeeAsync` as an async function using the `async` keyword.
+2. This allows us to call it later using the `await` keyword.
+3. The next line of code after the `await` keyword _waits_ until that line is resolved.
+4. We can handled the success and failure of a call using the `try` and `catch` keywords.
 
-このアップグレードのすばらしい点は、`await` キーワードにあります。通常、コールバックまたはチェーンされた Promise メソッドの外部で `console.log()` を書き込むと、`undefined` が返されます。一方で、`await` キーワードは、非同期処理が解決されるまでコードの実行を**停止**するため、上述の問題は発生しません！
+What makes this upgrade so great is the `await` keyword. Normally, writing `console.log()` outside of a callback or chained Promise method would return undefined. That's not a problem here, because the `await` keyword STOPS the code from running until that line of code is resolved!
 
-それでは、以下のコードをブラウザで試してみてください！
+Try it in your browser!
 
 ```JavaScript
 const getCoffeeAsync = async function(num) {
@@ -181,19 +180,19 @@ start(2);
 start("butterfly");
 ```
 
-注：この例では、`getCoffeeAsync` 関数内で、まだ Promise を返していることに気付くでしょう。残念ながら、`setTimeout` は明示的に async/await をまだサポートしていません！そのため、上記のようなラッパーを用意してコードを引き続き動作させる必要があります。
+Note: You'll notice in this example that we are still returning a Promise in the getCoffeeAsync function. Unfortunately, `setTimeout` doesn't explicitly support async/await (yet!), so we are adding this wrapper to make our code still work.
 
-[Async/Await](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/async_function) の詳細については、こちらを参照してください。
+You can read more about [Async/Await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) here.
 
-## 3 つの方法（コールバック、Promise、async/await）の比較
+## Side-by-Side Comparison
 
-[Pokemon API](https://pokeapi.co/) に対して同じリクエストを行うために、非同期 JavaScript を処理する 3 つの方法がどのように活用されるか見てみましょう。
+Let's take a look at how all three ways of handling asynchronous JavaScript are used to make the same request to the [Pokemon API](https://pokeapi.co/).
 
-Pokemon の API 呼び出しを行うには、[XMLHttpRequest](https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest)（コールバックを使用）、または、[Fetch](https://developer.mozilla.org/ja/docs/Web/API/Fetch_API)（Promises を使用）を使います。
+To make these API calls, we are using [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) (which takes a callback) or [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) (which uses Promises).
 
-それでは、ブラウザでテストしてみましょう！
+Test them out in your browser!
 
-### 1.コールバック
+### 1. Callback
 
 ```JavaScript
 function request(callback) {
@@ -233,42 +232,42 @@ async function request() {
 request();
 ```
 
-それぞれの方法には、ちょっとした違いがあるように見えます。どうしてでしょうか？
+These look a little different. Why?
 
-これらのリクエストでは、JSON をレスポンスとして返しますが、これらのレスポンス処理には時間がかかります。これは、多くの API で一般的なことです。
+These calls return response that aren't immediately useable as JSON– which is common for a lot of APIs.
 
-1. 最初の例では、プロセスに対して別のコールバック関数を返します。これを処理するには、すぐに呼び出される無名関数にレスポンスを渡し、その結果に対して `JSON.parse()` を呼び出し実行します。
+1. In the first example, it returns information that requires another callback to process. We handle this by passing the response into an immediately invoked anonymous function, and the calling `JSON.parse()` on the result (yikes).
 
-2. 後の 2 つの例では、別の Promise を返します！これを処理するには、前の Promise からのレスポンスに対して `.json()` というメソッドを呼び出します。次に、別の `.then()` メソッドをチェーンするか、別の `await` を使用して結果を取得します。
+2. In the other two examples, it returns another Promise! We handle this by calling a method called `.json()` on the response from the previous Promise. We then either chain another `.then()` method or use another `await` to get to our results.
 
-将来、API を使用する場合には、おそらく JSON を扱う必要があるので、`.json()` メソッドを覚えておくようにしましょう！
+You will probably need to process JSON when you work with APIs in the future, so make a mental note to remember the `.json()` method!
 
-## どれを使うべきなのか
+## Which You Should Use
 
-場合によっては、コールバックを使用する必要が出てきます。ただし、可能な限り async/await または Promise を使用するようにしましょう。JavaScript の構文は、妥当な理由があってアップグレードされていきます！
+Sometimes, you will have to use callbacks. However, try to use Async/Await or Promises when you can. JavaScript syntax gets upgraded for a reason!
 
-お疲れさまでした！さあ、それでは今まで学んだことを次のパートで確認しましょう。
+Great job making it through this reading! Now, let's test your knowledge of what you learned.
 
-# パート 2 - Amazonian のチャレンジ
+# Part 2 - Amazonian Challenge
 
-## セットアップ
+## Setup
 
-- `yarn` による依存パッケージをインストール
-- `yarn test` によるテストの実行
+- `yarn` to install independencies
+- `yarn test` to run tests
 
-## 概要
+## Overview
 
-非同期 JavaScript の理解度をテストしましょう！この課題では、あなたが、ユーザーが製品を購入して評価できるオンラインショップ、 Amazonian で働くために雇われたと想定しましょう。
+Let's test your understanding of asychronous JavaScript! For this challenge, imagine that you have been hired to work at Amazonian, an online shop where users can buy and rate products.
 
-Amazonian では、データをリレーショナル形式で `.json` ファイルに保存します：
+They store their data in relational format in `.json` files:
 
 - products
 - users
 - reviews
 
-各ファイルは、`id` とデータを持つデータベーステーブルを表します。
+Each file represents a database table, with an `id` and data.
 
-あなたの仕事は、次に示すフォーマットにこれらの 3 つのテーブルを”結合”することです。
+Your job is to "join" these three tables into the following format:
 
 ```js
 {
@@ -279,25 +278,25 @@ Amazonian では、データをリレーショナル形式で `.json` ファイ�
 }
 ```
 
-[ReviewBuilder.js](ReviewBuilder.js)を確認してください。ここには 4 つの方法があります：
+Take a look at [ReviewBuilder.js](ReviewBuilder.js). There are four methods here:
 
-- 同期処理によるソリューション
-- 3 つの非同期処理によるソリューション：
-  1. コールバックを使用する
-  2. Promise の使用（未完成）
-  3. async＆await の使用（未完成）
+- A synchronous solution
+- Three asynchronous solutions:
+  1. Using callbacks
+  1. Using promises (not finished)
+  1. Using async & await (not finished)
 
-buildReviewsSync の同期処理による実装は既に完了しています。メソッドとして、`fs.readFileSync` を使用していることに注意してください。
+The synchronous solution for buildReviewsSync is already finished for you. Note that it uses `fs.readFileSync` as its method.
 
-既に実装済みのコールバックによる実装では、データを非同期で返す `fs.readFile` を使用しています。`fs.readFile` の使い方については、[Node ドキュメント](https://nodejs.org/api/fs.html#fs_fs_readfile_path_options_callback)を参照してください。
+The callback solution, which is also already solved, uses `fs.readFile`, which returns data data asychronously. Read about that how `fs.readFile` works [in the Node documentation](https://nodejs.org/api/fs.html#fs_fs_readfile_path_options_callback).
 
-## 基礎レベル
+## Basic Requirements
 
-1. [ ] `ReviewBuilder.js` および `helpers/index.js` ファイルのソースコードを読んでみましょう。
+1. [ ] Read through the code in `ReviewBuilder.js` and in the `helpers/index.js` file.
 
-   - すでに実装済みの 2 つのソリューションで何が起こなわれているのか理解しましょう。
-   - また、ヘルパーファイルのソースコードの内容を必ず理解しましょう。実装する必要がある 2 つのメソッドでそれらを使用する必要があります。
-   - 各行で何が起こなわれているか理解するために、擬似コードを作成してみましょう！
+   - Make sure you understand what is happening in the two solutions written for you.
+   - Also make sure you understand the code in the helper file. You will want to use them in the two methods you need to implement.
+   - Feel free to pseudocode your understanding of what is happening on each line!
 
-1. [ ] `buildReviewsPromises` メソッドを実装しましょう。
-1. [ ] `buildReviewsAsyncAwait` メソッドを実装しましょう。
+1. [ ] Implement the `buildReviewsPromises` method.
+1. [ ] Implement the `buildReviewsAsyncAwait` method.
